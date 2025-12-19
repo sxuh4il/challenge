@@ -24,14 +24,20 @@ class AnswerResponse(BaseModel):
 async def ask_question(request: QuestionRequest):
     try:
         retriever = get_retriever()
-        chain = get_rag_chain(retriever)
-        
-        response = chain.invoke({"question": request.question})
+        chain = get_rag_chain(retriever)        
+
+        response = chain({
+            "question": request.question
+        })
+
         
         answer = response["result"]
         source_docs = response["source_documents"]
         
-        sources = list(set([os.path.basename(doc.metadata.get("source", "unknown")) for doc in source_docs]))
+        sources = list(set([
+            os.path.basename(doc.metadata.get("source", "unknown")) 
+            for doc in source_docs
+        ]))
         
         return AnswerResponse(answer=answer, sources=sources)
         

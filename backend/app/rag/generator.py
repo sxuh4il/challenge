@@ -1,6 +1,6 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
-from langchain.chains import RetrievalQA
+from langchain.chains import LLMChain
 from app.config import config
 
 def get_rag_chain(retriever):
@@ -13,34 +13,39 @@ def get_rag_chain(retriever):
         temperature=0.0
     )
 
-    prompt_template = """You are an expert assistant for a Question-Answering task.
+    prompt = PromptTemplate(
+        template="""You are an expert assistant for a Question-Answering task.
 
 Instructions:
 1. Answer the question based ONLY on the provided context below.
-2. If the answer is not in the context, strictly reply: "I don't have enough information to answer this question based on the provided documents."
+2. If the answer is not in the context, strictly reply:
+   "I don't have enough information to answer this question based on the provided documents."
 3. Do not invent information.
-4. Answer in the SAME LANGUAGE as the question (e.g., if the question is in French, answer in French).
+4. Answer in the SAME LANGUAGE as the question.
 
 Context:
 {context}
 
 Question: {question}
 
-Answer:"""
-
-    PROMPT = PromptTemplate(
-        template=prompt_template,
+Answer:""",
         input_variables=["context", "question"]
     )
 
-    qa_chain = RetrievalQA.from_chain_type(
-        llm=llm,
-        chain_type="stuff",
-        retriever=retriever,
-        return_source_documents=True,
-        chain_type_kwargs={
-            "prompt": PROMPT
-        }
-    )
+    llm_chain = LLMChain(llm=llm, prompt=prompt)
 
-    return qa_chain
+    def rag_chain(inputs: dict):
+        docs = retriever.get_relevant_documents(inputs["question"])
+        context = "\n\n".join(doc.page_content for doc in docs)
+
+        result = llm_chain.invoke({
+            "context": context,
+            "question": inputs["question"]
+        })
+
+        return {
+            "result": result["text"],
+            "source_documents": docs
+        }
+
+    return rag_chain

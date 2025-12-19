@@ -18,6 +18,6 @@ class Config:
     # RAG Parameters
     CHUNK_SIZE = 1000
     CHUNK_OVERLAP = 100
-    RETRIEVAL_K = 4
+    RETRIEVAL_K = 3
 
 config = Config()
