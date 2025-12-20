@@ -1,4 +1,4 @@
-# 📚 RAG Q&A Chatbot (FastAPI + LangChain + FAISS + Gemini)
+# 📚 RAG Q&A Chatbot
 
 ## 📌 Description du projet
 Ce projet est une application de Question–Réponse basée sur le principe de RAG (Retrieval-Augmented Generation).
@@ -17,6 +17,8 @@ User → FastAPI → FAISS Retriever → Gemini LLM → Answer + Sources
 - React (Frontend)
 
 ## 📂 Structure
+```bash
+
 .
 ├── backend/
 │   ├── app/
@@ -43,6 +45,7 @@ User → FastAPI → FAISS Retriever → Gemini LLM → Answer + Sources
 ├── docker-compose.yml
 ├── docker.sh
 └── README.md
+```
 
 ## ⚙️ Installation
 ```bash
